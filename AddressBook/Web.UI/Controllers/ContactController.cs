@@ -93,6 +93,25 @@ namespace Web.UI.Controllers
                 return RedirectToAction("Index");
             }
         }
+
+        public async Task<IActionResult> Delete(long id)
+        {
+            ContactModel contactModel = null;
+            using (var client = new HttpClient())
+            {
+                client.BaseAddress = new Uri(BaseUrl);
+                client.DefaultRequestHeaders.Clear();
+                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                HttpResponseMessage Res = await client.GetAsync($"api/{id}");
+                if (Res.IsSuccessStatusCode)
+                {
+                    var contactsJson = await Res.Content.ReadAsStringAsync();
+                    contactModel = JsonConvert.DeserializeObject<ContactModel>(contactsJson);
+                }
+
+            }
+            return View(contactModel);
+        }
     }
 }
 
